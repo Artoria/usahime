@@ -40,9 +40,9 @@ static int MyRGSSEval(const char *str){
   }
   return (eval_t(oldeval))(str);
 }
-#define MAKE_NAMES(a) #a, 
+#define MAKE_NAMES(a)  (const char *)#a, 
 static const char* names[] = {
-  (const char *)RGSSX_FORWARD(MAKE_NAMES)
+  RGSSX_FORWARD(MAKE_NAMES)
   0
 };
 #undef MAKE_NAMES
