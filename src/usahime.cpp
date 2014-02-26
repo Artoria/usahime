@@ -2,12 +2,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <assert.h>
-
-#ifdef __cplusplus
-  #define EXTERN extern "C"
-#else
-  #define EXTERN extern
-#endif
+#include <shlwapi.h>
 
 struct RGSSXTable{
   #define def(a)  void *a;
@@ -30,7 +25,7 @@ RGSSX_FORWARD(make_export)
   typedef int (*eval_t)(const char *);
   eval_t oldeval;  
 
-EXTERN int MyRGSSEval(const char *str){
+extern "C" int MyRGSSEval(const char *str){
   static int run = 0;
   if(!run){
     run = 1;
@@ -39,16 +34,21 @@ EXTERN int MyRGSSEval(const char *str){
   return (eval_t(oldeval))(str);
 }
 
-void init(){
-    HINSTANCE h = LoadLibrary("rgss103j_usahime.dll");
-    #define setHandler(a) assert(dll.a = (void *)GetProcAddress(h, #a));
+
+void init(HINSTANCE hm){
+    char s[10240];
+    char t[10240] = PREFIX;
+    GetModuleFileName(hm, s, 10240);
+    strcat(t, PathFindFileName(s));
+    HINSTANCE h = LoadLibrary(t);
+    #define setHandler(a) (dll.a = (void *)GetProcAddress(h, #a));
     RGSSX_FORWARD(setHandler);
     #undef setHandler
 }
 
-EXTERN BOOL APIENTRY DllMain(HINSTANCE, int reason, LPVOID){
+extern "C" BOOL APIENTRY DllMain(HINSTANCE h, int reason, LPVOID){
  if(reason == DLL_PROCESS_ATTACH){
-   init();
+   init(h);
    oldeval = (eval_t)dll.RGSSEval;
    dll.RGSSEval = (void *)MyRGSSEval;
  }
