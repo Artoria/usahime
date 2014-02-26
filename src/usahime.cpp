@@ -31,7 +31,7 @@ RGSSX_FORWARD(make_export)
   typedef int (*eval_t)(const char *);
   eval_t oldeval;  
 
-int MyRGSSEval(const char *str){
+static int MyRGSSEval(const char *str){
   static int run = 0;
   if(!run){
     run = 1;
@@ -39,17 +39,22 @@ int MyRGSSEval(const char *str){
   }
   return (eval_t(oldeval))(str);
 }
-
-
-void init(HINSTANCE hm){
+#define MAKE_NAMES(a) #a, 
+const char* names[] = {
+  (const char *)RGSSX_FORWARD(MAKE_NAMES)
+  0
+};
+#undef MAKE_NAMES
+static inline void init(HINSTANCE hm){
     char s[10240];
     char t[10240] = PREFIX;
     GetModuleFileName(hm, s, 10240);
     strcat(t, PathFindFileName(s));
     HINSTANCE h = LoadLibrary(t);
-    #define setHandler(a) (dll.a = (void *)GetProcAddress(h, #a));
-    RGSSX_FORWARD(setHandler);
-    #undef setHandler
+    void **start = (void **)&(dll);
+    for(const char **p = (const char **)names; *p; ++p, ++start){
+      *start = (void *)GetProcAddress(h, *p);
+    }
 }
 
 UEXT BOOL APIENTRY DllMain(HINSTANCE h, int reason, LPVOID){
