@@ -1,4 +1,5 @@
 #include "data.h"
+#include <malloc.h>
 #include <stdio.h>
 #include <windows.h>
 #include <assert.h>
@@ -47,8 +48,10 @@ static const char* names[] = {
 #undef MAKE_NAMES
 
 static void init(HINSTANCE h){
-    char s[2048];
-    char t[2048] = PREFIX;
+    char *s = (char *)malloc(2048);
+    char *t = (char *)malloc(2048);
+    t[0] = 0;
+    strcpy(t, PREFIX);
     GetModuleFileName(h, s, 2048);
     strcat(t, PathFindFileName(s));
     HINSTANCE ha = LoadLibrary(t);
@@ -56,7 +59,10 @@ static void init(HINSTANCE h){
     for(const char **p = (const char **)names; *p; ++p, ++start){
       *start = (void *)GetProcAddress(ha, *p);
     }
+    free(t);
+    free(s);
 }
+
 UEXT BOOL APIENTRY DllMain(HINSTANCE h, int reason, LPVOID){
  if(reason == DLL_PROCESS_ATTACH){
    init(h);
