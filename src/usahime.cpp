@@ -16,13 +16,13 @@ struct RGSSXTable{
   #undef def  
 } dll;
 
-__asm__(".set ofs, 0\n\t");
+__asm__(".set ofs, _dll\n\t");
 
 #define make_export(a)\
   __asm__(".global _" #a "\n\t");\
   __asm__("_" #a ":\n\t");\
-  __asm__("mov $_dll, %eax\n\t");\
-  __asm__("jmp *ofs(%eax)\n\t");\
+  __asm__("mov ofs, %eax\n\t");\
+  __asm__("jmp *%eax\n\t");\
   __asm__(".set ofs, ofs+4");
   
 RGSSX_FORWARD(make_export)
@@ -40,23 +40,23 @@ static int MyRGSSEval(const char *str){
   return (eval_t(oldeval))(str);
 }
 #define MAKE_NAMES(a) #a, 
-const char* names[] = {
+static const char* names[] = {
   (const char *)RGSSX_FORWARD(MAKE_NAMES)
   0
 };
 #undef MAKE_NAMES
-static inline void init(HINSTANCE hm){
-    char s[10240];
-    char t[10240] = PREFIX;
-    GetModuleFileName(hm, s, 10240);
+
+static void init(HINSTANCE h){
+    char s[2048];
+    char t[2048] = PREFIX;
+    GetModuleFileName(h, s, 2048);
     strcat(t, PathFindFileName(s));
-    HINSTANCE h = LoadLibrary(t);
+    HINSTANCE ha = LoadLibrary(t);
     void **start = (void **)&(dll);
     for(const char **p = (const char **)names; *p; ++p, ++start){
-      *start = (void *)GetProcAddress(h, *p);
+      *start = (void *)GetProcAddress(ha, *p);
     }
 }
-
 UEXT BOOL APIENTRY DllMain(HINSTANCE h, int reason, LPVOID){
  if(reason == DLL_PROCESS_ATTACH){
    init(h);
