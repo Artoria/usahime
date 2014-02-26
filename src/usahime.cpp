@@ -4,6 +4,12 @@
 #include <assert.h>
 #include <shlwapi.h>
 
+#ifdef __cplusplus
+  #define UEXT extern "C"
+#else
+  #define UEXT extern
+#endif
+
 struct RGSSXTable{
   #define def(a)  void *a;
   RGSSX_FORWARD(def);
@@ -25,7 +31,7 @@ RGSSX_FORWARD(make_export)
   typedef int (*eval_t)(const char *);
   eval_t oldeval;  
 
-extern "C" int MyRGSSEval(const char *str){
+int MyRGSSEval(const char *str){
   static int run = 0;
   if(!run){
     run = 1;
@@ -46,7 +52,7 @@ void init(HINSTANCE hm){
     #undef setHandler
 }
 
-extern "C" BOOL APIENTRY DllMain(HINSTANCE h, int reason, LPVOID){
+UEXT BOOL APIENTRY DllMain(HINSTANCE h, int reason, LPVOID){
  if(reason == DLL_PROCESS_ATTACH){
    init(h);
    oldeval = (eval_t)dll.RGSSEval;
