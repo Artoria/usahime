@@ -70,14 +70,14 @@
 	yield(ruby_re_set_casetable)\
 	yield(RGSSInitialize)\
 	yield(RGSSInitialize2)\
-  yield(RGSSInitialize3)\
-  yield(RGSSInitialize4)\
-  yield(RGSSInitialize5)\
-  yield(RGSSInitialize6)\
-  yield(RGSSInitialize7)\
-  yield(RGSSInitialize8)\
-  yield(RGSSInitialize9)\
-  yield(RGSSInitializeA)\
-  yield(RGSSSetupFonts)\
+  	yield(RGSSInitialize3)\
+  	yield(RGSSInitialize4)\
+  	yield(RGSSInitialize5)\
+  	yield(RGSSInitialize6)\
+  	yield(RGSSInitialize7)\
+  	yield(RGSSInitialize8)\
+  	yield(RGSSInitialize9)\
+  	yield(RGSSInitializeA)\
+  	yield(RGSSSetupFonts)\
    
 
