@@ -24,7 +24,7 @@ __asm__(".set ofs, _dll\n\t");
   __asm__("_" #a ":\n\t");\
   __asm__("mov ofs, %eax\n\t");\
   __asm__("jmp *%eax\n\t");\
-  __asm__(".set ofs, ofs+4");
+  __asm__(".set ofs, ofs+4\n\t");
   
 RGSSX_FORWARD(make_export)
 #undef make_export
